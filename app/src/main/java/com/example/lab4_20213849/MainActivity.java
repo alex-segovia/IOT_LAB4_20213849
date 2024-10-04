@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         verificarConexionAInternet();
+
+        Button botonIngresar = findViewById(R.id.botonIngresar);
+        botonIngresar.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this,AppActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
