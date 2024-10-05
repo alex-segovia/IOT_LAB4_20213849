@@ -9,15 +9,48 @@
         android:id="@+id/ligasFragment"
         android:name="com.example.lab4_20213849.LigasFragment"
         android:label="fragment_ligas"
-        tools:layout="@layout/fragment_ligas" />
+        tools:layout="@layout/fragment_ligas" >
+        <action
+            android:id="@+id/action_ligasFragment_to_posicionesFragment"
+            app:destination="@id/posicionesFragment"
+            app:popUpTo="@id/ligasFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_ligasFragment_to_resultadosFragment"
+            app:destination="@id/resultadosFragment"
+            app:popUpTo="@id/ligasFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
     <fragment
         android:id="@+id/posicionesFragment"
         android:name="com.example.lab4_20213849.PosicionesFragment"
         android:label="fragment_posiciones"
-        tools:layout="@layout/fragment_posiciones" />
+        tools:layout="@layout/fragment_posiciones" >
+        <action
+            android:id="@+id/action_posicionesFragment_to_resultadosFragment"
+            app:destination="@id/resultadosFragment"
+            app:popUpTo="@id/posicionesFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_posicionesFragment_to_ligasFragment"
+            app:destination="@id/ligasFragment"
+            app:popUpTo="@id/posicionesFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
     <fragment
         android:id="@+id/resultadosFragment"
         android:name="com.example.lab4_20213849.ResultadosFragment"
         android:label="fragment_resultados"
-        tools:layout="@layout/fragment_resultados" />
+        tools:layout="@layout/fragment_resultados" >
+        <action
+            android:id="@+id/action_resultadosFragment_to_posicionesFragment"
+            app:destination="@id/posicionesFragment"
+            app:popUpTo="@id/resultadosFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_resultadosFragment_to_ligasFragment"
+            app:destination="@id/ligasFragment"
+            app:popUpTo="@id/resultadosFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>
