@@ -80,7 +80,6 @@ public class PosicionesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_posiciones, container, false);
         Button botonBuscar = view.findViewById(R.id.botonBuscarPosiciones);
         EditText idBusqueda = view.findViewById(R.id.idLigaPosiciones);

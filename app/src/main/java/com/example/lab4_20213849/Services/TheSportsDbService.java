@@ -1,5 +1,6 @@
 package com.example.lab4_20213849.Services;
 
+import com.example.lab4_20213849.Dtos.EventDto;
 import com.example.lab4_20213849.Dtos.LeagueDto;
 import com.example.lab4_20213849.Dtos.PositionDto;
 
@@ -17,4 +18,9 @@ public interface TheSportsDbService {
     @GET("/api/v1/json/3/lookuptable.php")
     Call<PositionDto> listarPosiciones(@Query("l") String idLiga,
                                        @Query("s") String temporada);
+
+    @GET("/api/v1/json/3/eventsround.php")
+    Call<EventDto> listarEventos(@Query("id") String idLiga,
+                                 @Query("r") String ronda,
+                                 @Query("s") String temporada);
 }
