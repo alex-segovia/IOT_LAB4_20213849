@@ -1,7 +1,15 @@
 package com.example.lab4_20213849;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +29,7 @@ import com.example.lab4_20213849.Dtos.EventDto;
 import com.example.lab4_20213849.Dtos.Position;
 import com.example.lab4_20213849.Dtos.PositionDto;
 import com.example.lab4_20213849.Services.TheSportsDbService;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Use the {@link ResultadosFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ResultadosFragment extends Fragment {
+public class ResultadosFragment extends Fragment implements SensorEventListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -45,6 +54,10 @@ public class ResultadosFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private ArrayList<Event[]> listaTotal = new ArrayList<>();
+    SensorManager sensorManager;
+    Sensor acelerometro;
+    String dialog;
+    View viewUwu;
 
     public ArrayList<Event[]> getListaTotal() {
         return listaTotal;
@@ -94,6 +107,8 @@ public class ResultadosFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_resultados, container, false);
+        viewUwu = view;
+        dialog="No";
         Button botonBuscar = view.findViewById(R.id.botonBuscarResultados);
         EditText idBusqueda = view.findViewById(R.id.idLigaResultados);
         EditText seasonBusqueda = view.findViewById(R.id.seasonResultados);
@@ -165,5 +180,105 @@ public class ResultadosFragment extends Fragment {
                 Toast.makeText(getContext(),"Resultados no encontrados o datos inexistentes",Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        float x = sensorEvent.values[0];
+        float y = sensorEvent.values[1];
+        float z = sensorEvent.values[2];
+
+        float aceleration = (float) Math.sqrt(x*x+y*y+z*z);
+        if(!listaTotal.isEmpty()){
+            if(aceleration>20 && dialog.equals("No")){
+                dialog="Si";
+                MaterialAlertDialogBuilder dialogUwu = new MaterialAlertDialogBuilder(requireContext());
+                dialogUwu.setTitle("Agitación detectada");
+                dialogUwu.setMessage("Presiona el botón de Confirmar para eliminar la última búsqueda realizada.");
+                dialogUwu.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        listaTotal.remove(0);
+                        ListaEventosAdapter adapter = new ListaEventosAdapter();
+                        adapter.setContext(getContext());
+
+                        List<Event> listaAMostrar = new ArrayList<>();
+
+                        for(Event[] listEventos: listaTotal){
+                            listaAMostrar.addAll(Arrays.asList(listEventos));
+                        }
+
+                        adapter.setListaEventos(listaAMostrar);
+
+                        RecyclerView recyclerView = viewUwu.findViewById(R.id.recyclerViewResultados);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        dialog="No";
+                    }
+                });
+                dialogUwu.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog="No";
+                    }
+                });
+                dialogUwu.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        dialog="No";
+                    }
+                });
+                dialogUwu.show();
+            }
+        }else{
+            if(aceleration>20 && dialog.equals("No")){
+                dialog="Si";
+                MaterialAlertDialogBuilder dialogOwo = new MaterialAlertDialogBuilder(requireContext());
+                dialogOwo.setTitle("Agitación detectada");
+                dialogOwo.setMessage("No hay elementos para eliminar.");
+                dialogOwo.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog="No";
+                    }
+                });
+                dialogOwo.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        dialog="No";
+                    }
+                });
+                dialogOwo.show();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        acelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(acelerometro!=null){
+            sensorManager.registerListener(this,acelerometro,SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        sensorManager.unregisterListener(this);
     }
 }
