@@ -58,6 +58,7 @@ public class ResultadosFragment extends Fragment implements SensorEventListener 
     Sensor acelerometro;
     String dialog;
     View viewUwu;
+    private ArrayList<ArrayList<String>> listaBusquedas = new ArrayList<>();
 
     public ArrayList<Event[]> getListaTotal() {
         return listaTotal;
@@ -154,21 +155,37 @@ public class ResultadosFragment extends Fragment implements SensorEventListener 
                     if(listaEventos==null){
                         Toast.makeText(getContext(),"Resultados no encontrados o datos inexistentes",Toast.LENGTH_LONG).show();
                     }else{
-                        listaTotal.add(0,listaEventos);
-                        ListaEventosAdapter adapter = new ListaEventosAdapter();
-                        adapter.setContext(getContext());
-
-                        List<Event> listaAMostrar = new ArrayList<>();
-
-                        for(Event[] listEventos: listaTotal){
-                            listaAMostrar.addAll(Arrays.asList(listEventos));
+                        boolean oki = true;
+                        for (ArrayList<String> busq: listaBusquedas){
+                            if(idLiga.equals(busq.get(0)) && ronda.equals(busq.get(1)) && temporada.equals(busq.get(2))){
+                                oki = false;
+                                break;
+                            }
                         }
+                        if(oki){
+                            ArrayList<String> busqueda = new ArrayList<>();
+                            busqueda.add(idLiga);
+                            busqueda.add(ronda);
+                            busqueda.add(temporada);
+                            listaBusquedas.add(0,busqueda);
+                            listaTotal.add(0,listaEventos);
+                            ListaEventosAdapter adapter = new ListaEventosAdapter();
+                            adapter.setContext(getContext());
 
-                        adapter.setListaEventos(listaAMostrar);
+                            List<Event> listaAMostrar = new ArrayList<>();
 
-                        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewResultados);
-                        recyclerView.setAdapter(adapter);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                            for(Event[] listEventos: listaTotal){
+                                listaAMostrar.addAll(Arrays.asList(listEventos));
+                            }
+
+                            adapter.setListaEventos(listaAMostrar);
+
+                            RecyclerView recyclerView = view.findViewById(R.id.recyclerViewResultados);
+                            recyclerView.setAdapter(adapter);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        }else{
+                            Toast.makeText(getContext(),"Ya has realizado esta búsqueda",Toast.LENGTH_LONG).show();
+                        }
                     }
                 }else{
                     Toast.makeText(getContext(),"Resultados no encontrados o datos inexistentes",Toast.LENGTH_LONG).show();
@@ -199,6 +216,7 @@ public class ResultadosFragment extends Fragment implements SensorEventListener 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         listaTotal.remove(0);
+                        listaBusquedas.remove(0);
                         ListaEventosAdapter adapter = new ListaEventosAdapter();
                         adapter.setContext(getContext());
 
